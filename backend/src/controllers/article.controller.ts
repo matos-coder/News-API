@@ -115,3 +115,28 @@ export const getArticleDetails = catchAsync(async (req: AuthRequest, res: Respon
 
   res.json(successResponse("Article retrieved", article));
 });
+
+
+export const getAuthorDashboard = catchAsync(async (req: AuthRequest, res: Response) => {
+  const authorId = req.user!.sub;
+
+  const articles = await prisma.article.findMany({
+    where: { authorId, deletedAt: null },
+    select: { 
+      id: true, 
+      title: true, 
+      createdAt: true,
+      dailyAnalytics: { select: { viewCount: true } }
+    },
+    orderBy: { createdAt: 'desc' }
+  });
+
+  // Calculate total views for each article
+  const dashboardData = articles.map(article => ({
+    title: article.title,
+    createdAt: article.createdAt,
+    TotalViews: article.dailyAnalytics.reduce((sum, record) => sum + record.viewCount, 0)
+  }));
+
+  res.json(successResponse("Author Dashboard retrieved", dashboardData));
+});

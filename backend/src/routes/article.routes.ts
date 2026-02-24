@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { 
   createArticle, updateArticle, deleteArticle, getMyArticles, 
-  getPublicArticles, getArticleDetails 
+  getPublicArticles, getArticleDetails, 
+  getAuthorDashboard
 } from '../controllers/article.controller';
 import { authenticate, authorizeRole, optionalAuth } from '../middlewares/authMiddleware';
 import { validate } from '../middlewares/validate';
@@ -18,5 +19,6 @@ router.post('/', validate(articleSchema), createArticle);
 router.get('/author/me', getMyArticles);
 router.put('/:id', validate(articleSchema), updateArticle);
 router.delete('/:id', deleteArticle);
+router.get('/author/dashboard', getAuthorDashboard);
 
 export default router;
